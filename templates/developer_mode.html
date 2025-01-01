@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Mode</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff; /* Light blue background */
+            color: #333;
+            margin: 50px;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #1e90ff; /* Light blue color */
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #1e90ff;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #ffffff; /* White background for form */
+            padding: 20px;
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            max-width: 100%; /* Ensure input doesn't overflow */
+            padding: 12px;
+            font-size: 1.2em;
+            border: 2px solid #1e90ff;
+            border-radius: 8px; /* Rounded corners */
+            margin-top: 8px;
+            background-color: #f9f9f9; /* Light gray background for inputs */
+            box-sizing: border-box; /* Include padding and borders in width calculation */
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4682b4; /* Darker blue when focused */
+            background-color: #eaf4fc; /* Lighter blue when focused */
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            background-color: #1e90ff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #4682b4; /* Darker blue on hover */
+        }
+
+        .alert {
+            background-color: #d1ecf1; /* Light blue alert background */
+            border-color: #bee5eb; /* Border color */
+            color: #0c5460; /* Text color */
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .alert button {
+            background: none;
+            border: none;
+            color: #0c5460;
+            font-size: 1.5em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 40px;
+        }
+
+        table, th, td {
+            border: 1px solid #1e90ff;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px;
+            font-size: 1.2em;
+            background-color: #f9f9f9;
+        }
+
+        th {
+            background-color: #eaf4fc; /* Light blue header */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f1f8ff; /* Slightly darker blue for alternating rows */
+        }
+
+        tr:hover {
+            background-color: #d1ecf1; /* Highlight row on hover */
+        }
+
+        a {
+            color: #1e90ff;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .edit-delete-buttons {
+            text-align: center;
+        }
+
+        .edit-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edit-form input {
+            margin-bottom: 10px;
+        }
+
+        .edit-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .edit-buttons button {
+            width: 48%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Developer Mode</h1>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div>
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Form to add Phrase Pair -->
+    <form method="POST" action="/developer">
+        <div class="input-container">
+            <label for="phrase1">Phrase 1:</label>
+            <input type="text" id="phrase1" name="phrase1" required>
+        </div>
+        <div class="input-container">
+            <label for="phrase2">Phrase 2:</label>
+            <input type="text" id="phrase2" name="phrase2" required>
+        </div>
+        <div class="button-container">
+            <button type="submit">Add Phrase Pair</button>
+        </div>
+    </form>
+
+    <h2>Existing Phrase Pairs</h2>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Phrase 1</th>
+            <th>Phrase 2</th>
+            <th>Actions</th>
+        </tr>
+        {% for i, pair in phrases %}
+        <tr>
+            <td>{{ i }}</td>
+            <td>{{ pair[0] }}</td>
+            <td>{{ pair[1] }}</td>
+            <td class="edit-delete-buttons">
+                <a href="/edit_pair/{{ i }}">Edit</a> | <a href="/delete_pair/{{ i }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Edit Phrase Pair Form (Appears when clicking Edit link) -->
+    {% if request.args.get('edit') %}
+    <h2>Edit Phrase Pair</h2>
+    <form method="POST" action="/edit_pair/{{ request.args.get('edit') }}">
+        <div class="edit-form">
+            <input type="text" name="phrase1" value="{{ phrases[request.args.get('edit')|int][0] }}" required>
+            <input type="text" name="phrase2" value="{{ phrases[request.args.get('edit')|int][1] }}" required>
+        </div>
+        <div class="edit-buttons">
+            <button type="submit">Save Changes</button>
+            <a href="/developer"><button type="button">Cancel</button></a>
+        </div>
+    </form>
+    {% endif %}
+
+    <br>
+    <a href="/">Back to Main Page</a>
+</body>
+</html>
